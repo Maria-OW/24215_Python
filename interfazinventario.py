@@ -14,7 +14,7 @@ class InterfazInventario:
         self.inventario = Inventario()
         # Carga de los productos desde la base de datos al inventario
         self.cargar_productos_desde_db()
-        self.cargar_bajo_stock_desde_db()
+        #self.cargar_bajo_stock_desde_db()
         
 
         # Configuración de la ventana principal de la aplicación
@@ -54,7 +54,7 @@ class InterfazInventario:
         self.inventario.productos = productos_db
         
     def cargar_bajo_stock_desde_db(self):
-        productos_db = self.base_datos.buscar_stock_bajo()
+        productos_db = self.base_datos.obtener_stock_bajo()
         self.inventario.productos = productos_db
 
     # Interfaz para agregar un nuevo producto
@@ -66,7 +66,7 @@ class InterfazInventario:
             entry = tk.Entry(self.pagina_agregar, font=("Arial", 12))
             entry.grid(row=i, column=1, padx=10, pady=5)
             self.entries_agregar[etiqueta] = entry
-        self.boton_agregar = tk.Button(self.pagina_agregar, text="Agregar Producto", command=self.agregar_producto, font=("Arial", 12), bg="#4CAF50", fg="white")
+        self.boton_agregar = tk.Button(self.pagina_agregar, text="Agregar Producto", command=self.agregar_producto, font=("Arial", 12), bg="#0CA02F", fg="white")
         self.boton_agregar.grid(row=len(etiquetas_agregar) + 1, column=0, columnspan=2, pady=10)
 
     # Interfaz para modificar un producto existente
@@ -82,13 +82,13 @@ class InterfazInventario:
             entry = tk.Entry(self.pagina_modificar, font=("Arial", 12))
             entry.grid(row=i + 1, column=1, padx=10, pady=5)
             self.entries_modificar[etiqueta] = entry
-        self.boton_modificar = tk.Button(self.pagina_modificar, text="Modificar Producto", command=self.modificar_producto, font=("Arial", 12), bg="#008CBA", fg="white")  #modificar_producto
+        self.boton_modificar = tk.Button(self.pagina_modificar, text="Modificar Producto", command=self.modificar_producto, font=("Arial", 12), bg="#1A0CA0", fg="white")  #modificar_producto
         self.boton_modificar.grid(row=len(etiquetas_modificar) + 1, column=0, columnspan=2, pady=10)
 
 
     # Botón para eliminar productos
     def crear_boton_eliminar_producto(self):
-        self.boton_eliminar = tk.Button(self.pagina_modificar, text="Eliminar Producto", command=self.eliminar_producto, font=("Arial", 12), bg="#FF5733", fg="white")
+        self.boton_eliminar = tk.Button(self.pagina_modificar, text="Eliminar Producto", command=self.eliminar_producto, font=("Arial", 12), bg="#A0240C", fg="white")
         self.boton_eliminar.grid(row=8, column=0, columnspan=2, pady=10)
 
     # Botón para mostrar el listado completo del inventario
@@ -98,7 +98,7 @@ class InterfazInventario:
     
     # Botón para mostrar listdo de productos con bajo stock    
     def crear_boton_mostrar_stockbajo(self):
-        self.boton_mostrar_stockbajo = tk.Button(self.root, text="Mostrar Stock bajo", command=self.mostrar_stockbajo, font=("Arial", 12), bg="#333", fg="white")
+        self.boton_mostrar_stockbajo = tk.Button(self.root, text="Mostrar Stock bajo", command=self.mostrar_stock_bajo, font=("Arial", 12), bg="#FF5733", fg="white")
         self.boton_mostrar_stockbajo.pack(pady=10)
         
     # Botón para cerrar aplicacion
@@ -217,7 +217,7 @@ class InterfazInventario:
     
     
     #Muestra (o no!!!) el listado de productos con stock bajo
-    def mostrar_stockbajo(self):                                    # No filtra por < 5!!! 
+    def mostrar_stock_bajo(self):                                    # No filtra por < 5!!! 
         #messagebox.showinfo("Bajo Stock", "bajo")
 
         listado = self.inventario.generar_stock_bajo()
