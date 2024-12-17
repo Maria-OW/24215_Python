@@ -62,7 +62,8 @@ class BaseDatos:
     def obtener_stock_bajo(self):
         # Ejecución de la consulta SQL para obtener el listado de productos
         #self.cursor.execute("SELECT * FROM productos WHERE stock < 5")
-        self.cursor.execute('''SELECT producto_id, nombre, stock FROM productos WHERE stock < 5''')
+        self.cursor.execute('''SELECT * FROM productos WHERE stock < 40 ''')
+        print("test1")
         filas = self.cursor.fetchall()  # Obtención de todas las filas resultantes
         return [Producto(*fila) for fila in filas] # Creación de objetos Producto a partir de las filas y retorno de una lista de productos
 

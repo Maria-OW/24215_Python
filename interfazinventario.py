@@ -15,7 +15,7 @@ class InterfazInventario:
         # Carga de los productos desde la base de datos al inventario
         self.cargar_productos_desde_db()
         #self.cargar_bajo_stock_desde_db()
-        
+        #self.cargar_bajo_stock_desde_db()
 
         # Configuración de la ventana principal de la aplicación
         self.root = root
@@ -55,7 +55,7 @@ class InterfazInventario:
         
     def cargar_bajo_stock_desde_db(self):
         productos_db = self.base_datos.obtener_stock_bajo()
-        self.inventario.productos = productos_db
+        self.inventario.productos_bajo_stock = productos_db
 
     # Interfaz para agregar un nuevo producto
     def crear_interfaz_agregar_producto(self):
@@ -219,7 +219,8 @@ class InterfazInventario:
     #Muestra (o no!!!) el listado de productos con stock bajo
     def mostrar_stock_bajo(self):                                    # No filtra por < 5!!! 
         #messagebox.showinfo("Bajo Stock", "bajo")
-
+        print(self)
+        self.cargar_bajo_stock_desde_db()
         listado = self.inventario.generar_stock_bajo()
         mensaje = "\n\n".join(listado)
         

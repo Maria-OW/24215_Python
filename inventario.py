@@ -2,6 +2,7 @@
 class Inventario:
     def __init__(self):
         self.productos = []
+        self.productos_bajo_stock = []
 
     def agregar_producto(self, producto):
         self.productos.append(producto)
@@ -21,5 +22,5 @@ class Inventario:
         return listado
     
     def generar_stock_bajo(self):                                                          #Duda...
-        stock_bajo = [producto.obtener_detalles_stock() for producto in self.productos]
+        stock_bajo = [producto.obtener_detalles_stock() for producto in self.productos_bajo_stock]
         return stock_bajo
