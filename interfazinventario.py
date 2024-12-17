@@ -14,6 +14,7 @@ class InterfazInventario:
         self.inventario = Inventario()
         # Carga de los productos desde la base de datos al inventario
         self.cargar_productos_desde_db()
+        self.cargar_bajo_stock_desde_db()
         
 
         # Configuración de la ventana principal de la aplicación
@@ -50,6 +51,10 @@ class InterfazInventario:
     #Carga de los productos desde la base de datos al inventario (conexión con bdd para la consulta)
     def cargar_productos_desde_db(self):
         productos_db = self.base_datos.obtener_productos()
+        self.inventario.productos = productos_db
+        
+    def cargar_bajo_stock_desde_db(self):
+        productos_db = self.base_datos.buscar_stock_bajo()
         self.inventario.productos = productos_db
 
     # Interfaz para agregar un nuevo producto
