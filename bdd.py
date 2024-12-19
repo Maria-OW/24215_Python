@@ -18,7 +18,8 @@ class BaseDatos:
                 nombre TEXT NOT NULL,
                 descripcion TEXT,
                 precio REAL NOT NULL,
-                stock INTEGER NOT NULL,                
+                stock INTEGER NOT NULL, 
+                min_stock INTEGER NOT NULL,               
                 categoria TEXT
             )
         ''')
@@ -33,9 +34,9 @@ class BaseDatos:
     def agregar_producto(self, producto):
         # Ejecución de la consulta SQL para insertar un nuevo producto en la tabla
         self.cursor.execute('''
-            INSERT INTO productos (nombre, descripcion, precio, stock, categoria)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (producto.nombre, producto.descripcion, producto.precio, producto.stock, producto.categoria))
+            INSERT INTO productos (nombre, descripcion, precio, stock, min_stock, categoria)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (producto.nombre, producto.descripcion, producto.precio, producto.stock, producto.min_stock, producto.categoria))
         self.conexion.commit()  # Confirmación de los cambios en la base de datos
 
     def eliminar_producto(self, producto):
@@ -49,20 +50,18 @@ class BaseDatos:
         try:
             # Ejecución de la consulta SQL para actualizar el producto
             self.cursor.execute('''
-                UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, categoria=? WHERE producto_id=?
-            ''', (producto.nombre, producto.descripcion, producto.precio, producto.stock, producto.categoria, producto.producto_id))  
+                UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, min_stock=?, categoria=? WHERE producto_id=?
+            ''', (producto.nombre, producto.descripcion, producto.precio, producto.stock, producto.min_stock, producto.categoria, producto.producto_id))  
             self.conexion.commit()  # Confirmar los cambios en la base de datos
         except sqlite3.Error as error:
             # Manejar cualquier error de base de datos
             messagebox.showerror("Error en base de datos", f"No se pudo actualizar el producto: {error}")
 
 
-
     
     def obtener_stock_bajo(self):
-        # Ejecución de la consulta SQL para obtener el listado de productos
-        #self.cursor.execute("SELECT * FROM productos WHERE stock < 5")
-        self.cursor.execute('''SELECT producto_id, nombre, stock FROM productos WHERE stock < 5''')
+        # Ejecución de la consulta SQL para obtener el listado de productos       
+        self.cursor.execute('''SELECT * FROM productos WHERE stock < min_stock''')       
         filas = self.cursor.fetchall()  # Obtención de todas las filas resultantes
         return [Producto(*fila) for fila in filas] # Creación de objetos Producto a partir de las filas y retorno de una lista de productos
 

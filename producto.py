@@ -1,11 +1,12 @@
 # Clase Producto
 class Producto:
-    def __init__(self, producto_id, nombre, descripcion, precio, stock, categoria):
+    def __init__(self, producto_id, nombre, descripcion, precio, stock, min_stock, categoria):
         self.producto_id = producto_id
         self._nombre = nombre
         self._descripcion = descripcion
         self._precio = precio
         self._stock = stock
+        self._min_stock = min_stock
         self._categoria = categoria
 
     # NOMBRE
@@ -39,6 +40,14 @@ class Producto:
     @stock.setter
     def stock(self, nuevo_stock):
         self._stock = nuevo_stock
+    
+    # STOCK MÍNIMO
+    @property
+    def min_stock(self):
+        return self._min_stock
+    @min_stock.setter
+    def min_stock(self, nuevo_min_stock):
+        self._min_stock = nuevo_min_stock
 
     # CATEGORIA
     @property
@@ -51,10 +60,10 @@ class Producto:
     # OBTENER DETALLES
     def obtener_detalles(self):
         detalles = f"ID: {self.producto_id}\nNombre: {self.nombre}\nDescripción: {self.descripcion}\n"
-        detalles += f"Precio: {self.precio}\nStock: {self.stock}\nCategoria: {self.categoria}"
+        detalles += f"Precio: {self.precio}\nStock: {self.stock}\nStock mínimo: {self.min_stock}\nCategoria: {self.categoria}"
         return detalles
     
-    # OBTENER DETALLES PARA STOCK BAJO.................Duda...
+    # OBTENER DETALLES PARA STOCK BAJO
     def obtener_detalles_stock(self):
-        detalles = f"ID: {self.producto_id}\nNombre: {self.nombre}\nStock: {self.stock}"
+        detalles = f"ID: {self.producto_id}\nNombre: {self.nombre}\nStock mínimo: {self.min_stock}\nStock: {self.stock}"
         return detalles

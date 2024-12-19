@@ -14,9 +14,8 @@ class InterfazInventario:
         self.inventario = Inventario()
         # Carga de los productos desde la base de datos al inventario
         self.cargar_productos_desde_db()
-        #self.cargar_bajo_stock_desde_db()
+       
         
-
         # Configuración de la ventana principal de la aplicación
         self.root = root
         self.root.title("Sistema de Gestión de Inventario")
@@ -25,9 +24,11 @@ class InterfazInventario:
         style = ttk.Style()
         style.configure('TNotebook.Tab', font=('Helvetica', '11', 'bold'))
 
+
         # Configuración para mostrar pestañas
         self.notebook = ttk.Notebook(root)
         self.notebook.pack(expand=True, fill='both')
+
 
         # Creación de las pestañas "Agregar Producto" y "Modificar Producto" 
         self.pagina_agregar = ttk.Frame(self.notebook)
@@ -55,11 +56,11 @@ class InterfazInventario:
         
     def cargar_bajo_stock_desde_db(self):
         productos_db = self.base_datos.obtener_stock_bajo()
-        self.inventario.productos = productos_db
+        self.inventario.productos_bajo_stock = productos_db
 
     # Interfaz para agregar un nuevo producto
     def crear_interfaz_agregar_producto(self):
-        etiquetas_agregar = ["Nombre del Producto", "Descripción", "Precio", "Stock", "Categoría"]
+        etiquetas_agregar = ["Nombre del Producto", "Descripción", "Precio", "Stock", "Stock Mínimo", "Categoría"]
         self.entries_agregar = {}
         for i, etiqueta in enumerate(etiquetas_agregar):
             tk.Label(self.pagina_agregar, text=etiqueta, font=("Arial", 12)).grid(row=i, column=0, padx=10, pady=5)
@@ -71,7 +72,7 @@ class InterfazInventario:
 
     # Interfaz para modificar un producto existente
     def crear_interfaz_modificar_producto(self):
-        etiquetas_modificar = ["Seleccione Producto:", "Nombre del Producto", "Descripción", "Precio", "Stock", "Categoría"]
+        etiquetas_modificar = ["Seleccione Producto:", "Nombre del Producto", "Descripción", "Precio", "Stock", "Stock Mínimo", "Categoría"]
         self.combo_modificar = ttk.Combobox(self.pagina_modificar, values=["Seleccionar"] + [producto.nombre for producto in self.inventario.productos], font=("Arial", 12))
         self.combo_modificar.grid(row=0, column=1, padx=10, pady=5)
         self.combo_modificar.set("Seleccionar")
@@ -80,7 +81,7 @@ class InterfazInventario:
         for i, etiqueta in enumerate(etiquetas_modificar[1:]):
             tk.Label(self.pagina_modificar, text=etiqueta, font=("Arial", 12)).grid(row=i + 1, column=0, padx=10, pady=5)
             entry = tk.Entry(self.pagina_modificar, font=("Arial", 12))
-            entry.grid(row=i + 1, column=1, padx=10, pady=5)
+            entry.grid(row=i + 1, column=1, padx=10, pady=5) 
             self.entries_modificar[etiqueta] = entry
         self.boton_modificar = tk.Button(self.pagina_modificar, text="Modificar Producto", command=self.modificar_producto, font=("Arial", 12), bg="#1A0CA0", fg="white")  #modificar_producto
         self.boton_modificar.grid(row=len(etiquetas_modificar) + 1, column=0, columnspan=2, pady=10)
@@ -89,7 +90,7 @@ class InterfazInventario:
     # Botón para eliminar productos
     def crear_boton_eliminar_producto(self):
         self.boton_eliminar = tk.Button(self.pagina_modificar, text="Eliminar Producto", command=self.eliminar_producto, font=("Arial", 12), bg="#A0240C", fg="white")
-        self.boton_eliminar.grid(row=8, column=0, columnspan=2, pady=10)
+        self.boton_eliminar.grid(row=30, column=0, columnspan=2, pady=10)
 
     # Botón para mostrar el listado completo del inventario
     def crear_boton_mostrar_listado(self):
@@ -117,8 +118,9 @@ class InterfazInventario:
             descripcion = self.entries_agregar["Descripción"].get()
             precio = float(self.entries_agregar["Precio"].get())
             stock = int(self.entries_agregar["Stock"].get())
+            min_stock = int(self.entries_agregar["Stock Mínimo"].get())
             categoria = self.entries_agregar["Categoría"].get()
-            producto = Producto(len(self.inventario.productos) + 1, nombre, descripcion, precio, stock, categoria)
+            producto = Producto(len(self.inventario.productos) + 1, nombre, descripcion, precio, stock, min_stock, categoria)
             self.inventario.agregar_producto(producto)
             self.base_datos.agregar_producto(producto)
             self.combo_modificar["values"] = ["Seleccionar"] + [p.nombre for p in self.inventario.productos]
@@ -140,6 +142,8 @@ class InterfazInventario:
                 self.entries_modificar["Precio"].insert(0, str(producto.precio))
                 self.entries_modificar["Stock"].delete(0, tk.END)
                 self.entries_modificar["Stock"].insert(0, str(producto.stock)) 
+                self.entries_modificar["Stock Mínimo"].delete(0, tk.END)
+                self.entries_modificar["Stock Mínimo"].insert(0, str(producto.min_stock)) 
                 self.entries_modificar["Categoría"].delete(0, tk.END)
                 self.entries_modificar["Categoría"].insert(0, producto.categoria)
     
@@ -152,6 +156,7 @@ class InterfazInventario:
                 nueva_descripcion = self.entries_modificar["Descripción"].get()
                 nuevo_precio = self.entries_modificar["Precio"].get()
                 nuevo_stock = self.entries_modificar["Stock"].get()
+                nuevo_min_stock = self.entries_modificar["Stock Mínimo"].get()
                 nuevo_categoria = self.entries_modificar["Categoría"].get()
                 if nuevo_precio and nuevo_stock and nuevo_categoria and nueva_descripcion:
                     try:
@@ -160,15 +165,16 @@ class InterfazInventario:
                         producto.descripcion = nueva_descripcion
                         producto.precio = nuevo_precio
                         producto.stock = nuevo_stock
+                        producto.min_stock = nuevo_min_stock
                         producto.categoria = nuevo_categoria                        
                         self.base_datos.actualizar_producto(producto)
                         self.base_datos.cerrar_conexion()
                         self.base_datos = BaseDatos()
                         messagebox.showinfo("Éxito", "Producto modificado correctamente.")
                     except ValueError:
-                        messagebox.showerror("Error", "Ingrese datos válidos para precio y stock.")
+                        messagebox.showerror("Error", "Ingrese datos válidos para precio y stock/stock mínimo.")
                 else:
-                    messagebox.showerror("Error", "Ingrese nuevo precio, stock, categoría y descripción.")
+                    messagebox.showerror("Error", "Ingrese nuevo precio, stock/stock mínimo, categoría y descripción.")
             else:
                 messagebox.showerror("Error", "Producto no encontrado.")
         else:
@@ -216,10 +222,9 @@ class InterfazInventario:
     
     
     
-    #Muestra (o no!!!) el listado de productos con stock bajo
-    def mostrar_stock_bajo(self):                                    # No filtra por < 5!!! 
-        #messagebox.showinfo("Bajo Stock", "bajo")
-
+    #Muestra el listado de productos con stock bajo
+    def mostrar_stock_bajo(self):       
+        self.cargar_bajo_stock_desde_db()
         listado = self.inventario.generar_stock_bajo()
         mensaje = "\n\n".join(listado)
         
